@@ -12,21 +12,21 @@ void print_rep(int rinitpos, int rendpos, int rlength, int rperiod, int rnumerr)
      /* printing an exact or approximate rep */
 {
   
-  if ((nrRep++)==0 && xmloutput==NO) {
-      if ((seenRep++)==0) {
-	printf("Sequence '%s'\n", seqName+strspn(seqName," "));
-	printf("   from   ->       to  : \t size\t <per.>\t [exp.]\t errors: \trepetition\n") ;
-	printf(" ---------------------------------------------------------------------------------------------\n");
-      }
-    }
+//  if ((nrRep++)==0 && xmloutput==NO) {
+//      if ((seenRep++)==0) {
+//	printf("Sequence '%s'\n", seqName+strspn(seqName," "));
+//	printf("   from   ->       to  : \t size\t <per.>\t [exp.]\t errors: \trepetition\n") ;
+//	printf(" ---------------------------------------------------------------------------------------------\n");
+//      }
+//    }
 
   if (xmloutput==YES)
     fprintf (output_file,
 	     "\t<repeat>\n\t\t<start>%d</start>\n\t\t<end>%d</end>\n\t\t<length>%d</length>\n\t\t<period>%d</period>\n\t\t<exponent>%.2f</exponent>\n\t\t<errors>%d</errors>\n",
 	     start_pstn+rinitpos, start_pstn+rendpos, rlength, rperiod,((float) rlength) / rperiod, rnumerr) ; 
   else
-    printf("%8d  ->  %8d :   \t %d \t <%d> \t [%.2f] \t %d \t",
-	   start_pstn+rinitpos, start_pstn+rendpos, rlength, rperiod, ((float) rlength) / rperiod, rnumerr
+    printf("%s\t%8d\t%8d\t%d\t%d\t%.2f\t%d",
+	   seqName+strspn(seqName," "), start_pstn+rinitpos, start_pstn+rendpos, rlength, rperiod, ((float) rlength) / rperiod, rnumerr
 	   ) ;
 
   if (!noprint)
@@ -35,7 +35,8 @@ void print_rep(int rinitpos, int rendpos, int rlength, int rperiod, int rnumerr)
 /*       int re = (rendpos<rinitpos + MAXDISPLAY)? rendpos : rinitpos+(rperiod-1); */
       if (xmloutput==YES)
 	fprintf(output_file,"\t\t<sequence>\n"); 
-
+      else
+	printf("\t");
       //output the repetitions with a space after each period
 /*       for (position = rinitpos; position <= re; position++) */
 /*       for (position = rinitpos; position <= rendpos; position++) */
@@ -51,7 +52,8 @@ void print_rep(int rinitpos, int rendpos, int rlength, int rperiod, int rnumerr)
       for (per_start = rinitpos; per_start <= rendpos; per_start+=rperiod)
 	{
 	  if (xmloutput==YES)
-	    fprintf(output_file,"\t\t\t<unit>"); 
+	    fprintf(output_file,"\t\t\t<unit>");
+	  
 	  for (pos_in_per=0; pos_in_per<rperiod && per_start+pos_in_per<=rendpos; pos_in_per++)
 	    {
 	      if (xmloutput==YES)
@@ -61,8 +63,6 @@ void print_rep(int rinitpos, int rendpos, int rlength, int rperiod, int rnumerr)
 	    }
 	  if (xmloutput==YES)
 	    fprintf(output_file,"</unit>\n");
-	  else 
-	    printf(" ");
 	}
       if (xmloutput==YES)
 	fprintf(output_file,"\t\t</sequence>\n");
@@ -78,22 +78,22 @@ void print_rep(int rinitpos, int rendpos, int rlength, int rperiod, int rnumerr)
 void print_score(int rinitpos, int rendpos, int rlength, int rperiod, float rscore)
      /* printing an exact or approximate rep */
 {    
-  if ((nrRep++)==0 && xmloutput==NO)
-    {
-      if ((seenRep++)==0) {
-	printf("Sequence '%s'\n", seqName+strspn(seqName," "));
-	printf("   from   ->       to  : \t size\t <per.>\t [exp.]\t\t err-rate \tsequence\n") ;
-	printf(" ---------------------------------------------------------------------------------------------\n");
-      }
-    }
+//  if ((nrRep++)==0 && xmloutput==NO)
+//    {
+//      if ((seenRep++)==0) {
+//	printf("Sequence '%s'\n", );
+//	printf("   from   ->       to  : \t size\t <per.>\t [exp.]\t\t err-rate \tsequence\n") ;
+//	printf(" ---------------------------------------------------------------------------------------------\n");
+//      }
+//    }
 
   if (xmloutput==YES)
     fprintf (output_file,
 	     "\t<repeat>\n\t\t<start>%d</start>\n\t\t<end>%d</end>\n\t\t<length>%d</length>\n\t\t<period>%d</period>\n\t\t<exponent>%.2f</exponent>\n\t\t<score>%.3f</score>\n",
 	     start_pstn+rinitpos, start_pstn+rendpos, rlength, rperiod,((float) rlength) / rperiod, rscore) ; 
   else
-    printf("%8d  ->  %8d :   \t %d \t <%d> \t [%.2f] \t %.3f \t\t",
-	   start_pstn+rinitpos, start_pstn+rendpos, rlength, rperiod, ((float) rlength) / rperiod, rscore
+    printf("%s\t%8d\t%8d\t%d\t%d\t%.2f\t %.3f",
+	   seqName+strspn(seqName," "), start_pstn+rinitpos, start_pstn+rendpos, rlength, rperiod, ((float) rlength) / rperiod, rscore
 	   ) ;
 
   if (!noprint)
@@ -102,7 +102,9 @@ void print_score(int rinitpos, int rendpos, int rlength, int rperiod, float rsco
 /*       int re = (rendpos<rinitpos + MAXDISPLAY)? rendpos : rinitpos+(rperiod-1); */
       if (xmloutput==YES)
 	fprintf(output_file,"\t\t<sequence>\n"); 
-
+      else
+	printf("\t");
+      
       for (per_start = rinitpos; per_start <= rendpos; per_start+=rperiod)
 	{
 	  if (xmloutput==YES)

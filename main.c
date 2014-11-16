@@ -84,13 +84,21 @@ void init_limits ()
     
 void logo()
 {
-  printf("\n *****************************************************************************\n");
-  printf(  " *                              mreps 2.6                                    *\n");
-  printf(  " *                                                                           *\n");
-  printf(  " *                Finding tandem repeats in DNA sequences                    *\n");
-  printf(  " *                                                                           *\n");
-  printf(  " *                      http://mreps.univ-mlv.fr/                            *\n");
-  printf(  " *****************************************************************************\n\n");
+  //printf("\n *****************************************************************************\n");
+  //printf(  " *                              mreps 2.6                                    *\n");
+  //printf(  " *                                                                           *\n");
+  //printf(  " *                Finding tandem repeats in DNA sequences                    *\n");
+  //printf(  " *                                                                           *\n");
+  //printf(  " *                      http://mreps.univ-mlv.fr/                            *\n");
+  //printf(  " *****************************************************************************\n\n");
+  
+  printf("sequence\tfrom\tto\tsize\tperiod\texponent\terrors_or_rate");
+  
+  if (!noprint) {
+    printf("\trepetition_or_sequence");
+  }
+  
+  printf("\n")
 }
 
 void help()     
@@ -211,10 +219,10 @@ void printNbOfReps()
 	fprintf(stderr, " ---------------------------------------------------------------------------------------------\n");
 	if (nrRep == 1) {
 	  fprintf(stderr, "RESULTS: There is 1 repeat in the processed sequence\n\n");
-	  fprintf(stdout, "RESULTS: There is 1 repeat in the processed sequence\n\n");
+	  //fprintf(stdout, "RESULTS: There is 1 repeat in the processed sequence\n\n");
 	} else {
 	  fprintf(stderr, "RESULTS: There are %d repeats in the processed sequence\n\n", nrRep);
-	  fprintf(stdout, "RESULTS: There are %d repeats in the processed sequence\n\n", nrRep);
+	  //fprintf(stdout, "RESULTS: There are %d repeats in the processed sequence\n\n", nrRep);
 	}
       }
     else
