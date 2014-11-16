@@ -1,18 +1,23 @@
+#include <string.h>
 #include "defs.h"
 #define EXPERIMENT
-extern int start_pstn, nrRep, noprint;
+extern int start_pstn, nrRep, seenRep, noprint;
 extern char * seq_original;
+extern char * seqName;
 extern int xmloutput;
 extern FILE *output_file;
 
 
 void print_rep(int rinitpos, int rendpos, int rlength, int rperiod, int rnumerr)
      /* printing an exact or approximate rep */
-{    
-  if ((nrRep++)==0 && xmloutput==NO)
-    {  
-      printf("   from   ->       to  : \t size\t <per.>\t [exp.]\t errors: \trepetition\n") ;
-      printf(" ---------------------------------------------------------------------------------------------\n");
+{
+  
+  if ((nrRep++)==0 && xmloutput==NO) {
+      if ((seenRep++)==0) {
+	printf("Sequence '%s'\n", seqName+strspn(seqName," "));
+	printf("   from   ->       to  : \t size\t <per.>\t [exp.]\t errors: \trepetition\n") ;
+	printf(" ---------------------------------------------------------------------------------------------\n");
+      }
     }
 
   if (xmloutput==YES)
@@ -74,9 +79,12 @@ void print_score(int rinitpos, int rendpos, int rlength, int rperiod, float rsco
      /* printing an exact or approximate rep */
 {    
   if ((nrRep++)==0 && xmloutput==NO)
-    {  
-      printf("   from   ->       to  : \t size\t <per.>\t [exp.]\t\t err-rate \tsequence\n") ;
-      printf(" ---------------------------------------------------------------------------------------------\n");
+    {
+      if ((seenRep++)==0) {
+	printf("Sequence '%s'\n", seqName+strspn(seqName," "));
+	printf("   from   ->       to  : \t size\t <per.>\t [exp.]\t\t err-rate \tsequence\n") ;
+	printf(" ---------------------------------------------------------------------------------------------\n");
+      }
     }
 
   if (xmloutput==YES)

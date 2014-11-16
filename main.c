@@ -47,6 +47,7 @@ time_t now;
 /* Variables */
 int inputLength;       // sequence length or file size
 int nrRep ;            // number of repetitions output
+int seenRep ;            // flag whether a rep has been seen for this sequence
 int situation;         // situation code
 int maxPer, minPer, dblMinPer, oldPerBnd  ;
 char nextLetterCheck='\0', prevLetterCheck='\0';  // letters immediately following and preceding
@@ -56,6 +57,8 @@ char nextLetterCheck='\0', prevLetterCheck='\0';  // letters immediately followi
 int showjunk = NO;
 FILE *junkfile;
 #endif
+
+char * seqName;
 
 /* Little helps */
 
@@ -176,10 +179,11 @@ void help()
 #define PROCESS_ACGT(word,length)     \
 { dblMinPer=2*lim.min_period;         \
   if (length>=dblMinPer)              \
-  {  if (lim.err_number == 0)         \
+  {  if (lim.err_number == 0) {        \
        maxreps (word,length);         \
-     else                             \
-       mismatchProgram(word,length);  \
+     } else {                             \
+       mismatchProgram(word,length); \
+     } \
      printNbOfReps();                 \
   }                                   \
   else                                \
@@ -203,21 +207,24 @@ void printNbOfReps()
   if (xmloutput==NO)
     if (nrRep)
       {
-	printf(" ---------------------------------------------------------------------------------------------\n");
-	if (nrRep == 1)
-	  printf("RESULTS: There is 1 repeat in the processed sequence\n\n");
-	else
-	  printf("RESULTS: There are %d repeats in the processed sequence\n\n", nrRep);
+	fprintf(stderr, " ---------------------------------------------------------------------------------------------\n");
+	if (nrRep == 1) {
+	  fprintf(stderr, "RESULTS: There is 1 repeat in the processed sequence\n\n");
+	  fprintf(stdout, "RESULTS: There is 1 repeat in the processed sequence\n\n");
+	} else {
+	  fprintf(stderr, "RESULTS: There are %d repeats in the processed sequence\n\n", nrRep);
+	  fprintf(stdout, "RESULTS: There are %d repeats in the processed sequence\n\n", nrRep);
+	}
       }
     else
-      printf("RESULTS: There are no repeats in the processed sequence\n\n");
+      fprintf(stderr, "RESULTS: There are no repeats in the processed sequence\n\n");
   else
     fprintf(output_file,"<nbofreps>%d</nbofreps>\n",nrRep);
 
     if (tooBigReps)
       {
 	if (xmloutput==NO)
-	  printf("Warning: repeats spanning beyond the window have been detected\n\n");
+	  fprintf(stderr, "Warning: repeats spanning beyond the window have been detected\n\n");
 	else
 	   fprintf(output_file,"<warning-big-reps-detected></warning-big-reps-detected>\n");
       }
@@ -239,14 +246,15 @@ char ProcessSeqFromFile(FILE * inputFile)
 
   prevLetterCheck = '\0';  // in case it is not the first sequence (fasta)
   nrRep = 0; 
-
+  seenRep = 0;
+  
 /* Skipping sequence to FROM position */
   while(seq_pstn < from)
     {
       workchar = RetrieveChar(situation,inputFile);
       if (workchar==EOF || (situation==ACGT_FILE_FASTA && workchar=='>')) 
 	{
-	  printf("Warning: The sequence is shorter than FROM parameter (%d)\n\n", from+1); 
+	  fprintf(stderr, "Warning: The sequence is shorter than FROM parameter (%d)\n\n", from+1); 
 	  return workchar;
 	}
       seq_pstn++;
@@ -281,7 +289,7 @@ char ProcessSeqFromFile(FILE * inputFile)
 	  LastWindow=NO;
 	  /* Process current block */
 	  if (xmloutput == NO)
-	    printf("\n* Processing window [%d : %d] *\n\n", start_pstn+1, start_pstn+counter);
+	    fprintf(stderr, "\n* Processing window [%d : %d] *\n\n", start_pstn+1, start_pstn+counter);
 	  else 
 	    {
 	      fprintf(output_file,"<window>\n");
@@ -306,7 +314,7 @@ char ProcessSeqFromFile(FILE * inputFile)
 
   /* Processing tail block */
   if (xmloutput == NO)
-    printf("\n* Processing window [%d : %d] *\n\n", start_pstn+1, start_pstn+counter);
+    fprintf(stderr, "\n* Processing window [%d : %d] *\n\n", start_pstn+1, start_pstn+counter);
   else 
     {
       fprintf(output_file,"<window>\n");
@@ -329,7 +337,7 @@ char ProcessSeqFromFile(FILE * inputFile)
       while ((workchar=RetrieveChar(situation,inputFile))!='>' && workchar!=EOF);
   else   // EOF or '>' has been reached
     if (toWasSpecified)
-      printf("Warning: TO(=%d) is beyond the end of sequence\n",to);
+      fprintf(stderr, "Warning: TO(=%d) is beyond the end of sequence\n",to);
   return workchar;
 }
 	
@@ -355,7 +363,7 @@ void ProcessSeqFromCommandLine(char * inputSeq)
 	tooBigReps = NO;
 	LastWindow=NO;
 	if (xmloutput == NO)
-	  printf("\n* Processing window [%d : %d] *\n\n", start_pstn+1, final_pstn);
+	  fprintf(stderr, "\n* Processing window [%d : %d] *\n\n", start_pstn+1, final_pstn);
 	else 
 	  {
 	    fprintf(output_file,"<window>\n");
@@ -379,7 +387,7 @@ void ProcessSeqFromCommandLine(char * inputSeq)
   tooBigReps = NO;
   LastWindow=YES;
   if (xmloutput == NO)
-    printf("\n* Processing window [%d : %d] *\n\n", start_pstn+1, final_pstn);
+    fprintf(stderr, "\n* Processing window [%d : %d] *\n\n", start_pstn+1, final_pstn);
   else 
     {
       fprintf(output_file,"<window>\n");
@@ -403,16 +411,16 @@ char ReadSeqName(FILE * inputFile)
 */
 {
   char workchar;
-  char * seqName;
+  
   int counter=0;
 
-  seqName = malloc ((1 + MAX_LINE_LENGTH)*sizeof(char));
+  
 
   while ( (workchar = fgetc(inputFile))!='\n' && workchar!=EOF && counter<MAX_LINE_LENGTH )
     seqName[counter++] = workchar;
   seqName[counter] = '\0';
   if (xmloutput == NO)
-    printf("Processing sequence '%s'\n", seqName+strspn(seqName," "));
+    fprintf(stderr, "Processing sequence '%s'\n", seqName+strspn(seqName," "));
   else
     fprintf(output_file,"<sequence-name>%s</sequence-name>\n", seqName+strspn(seqName," "));
 
@@ -421,12 +429,10 @@ char ReadSeqName(FILE * inputFile)
     while (workchar!='\n' && workchar!=EOF) workchar=fgetc(inputFile);
   if (workchar==EOF) 
     {
-      printf("Warning: unexpected end-of-file after sequence name\n");
-      free(seqName);
+      fprintf(stderr, "Warning: unexpected end-of-file after sequence name\n");
       return workchar;
     }
   /* workchar=='\n' */
-  free(seqName);
   return workchar;
 }
 
@@ -444,7 +450,9 @@ int main (int argc,char * argv[])
   struct stat st ;      // file descriptor
   char workchar;        // working char
   FILE *input_file;            // input file
-
+  
+  seqName = malloc ((1 + MAX_LINE_LENGTH)*sizeof(char));
+  
   verbose = 0;          // do not verbose
 
   /* let us start */
@@ -622,7 +630,7 @@ int main (int argc,char * argv[])
       if (lim.max_period>inputLength/2) lim.max_period=inputLength/2;
       if (lim.max_period < lim.min_period) 
 	{
-	  fprintf(stderr,"Error: Maximal period must be greater or equal to the minimal period! \n");
+	  fprintf(stderr,"Error: Maximal period (%d) must be greater or equal to the minimal period! (%d) (%d, %d)\n", lim.max_period, lim.min_period, inputLength, inputLength/2);
 	  PROCESS_ERROR(output_file,output_file_name,4)
 	  exit (4);
 	}
@@ -662,7 +670,7 @@ int main (int argc,char * argv[])
 	}
       if (to > inputLength && input_type == INPUT_ARG)
 	{
-	  printf("Warning: TO(=%d) exceeds sequence length\n",to);
+	  fprintf(stderr, "Warning: TO(=%d) exceeds sequence length\n",to);
 	  to = inputLength;
 	}
     }
@@ -679,7 +687,7 @@ int main (int argc,char * argv[])
   
   /* 2.5 Validate number of possible errors */
 
-  VERB(1)  printf("Resolution parameter is %d\n", lim.err_number);
+  VERB(1)  fprintf(stderr, "Resolution parameter is %d\n", lim.err_number);
 
   /* 2.6 Validate ERR */
   if (lim.err_number>0 && lim.err_number >= inputLength/2-1)
@@ -693,7 +701,7 @@ int main (int argc,char * argv[])
    if ( lim.min_period<1 )
       lim.min_period=1;
 
-  VERB(1)  printf("Minimal possible period of repeats is %d\n", lim.min_period);  
+  VERB(1)  fprintf(stderr, "Minimal possible period of repeats is %d\n", lim.min_period);  
   
 /*   if (lim.max_size == -1) lim.max_size  = 2*step ; */
 
@@ -775,7 +783,8 @@ int main (int argc,char * argv[])
 	    workchar=ReadSeqName(input_file);
 	    if (workchar != EOF)
 	      {
-		nrRep = 0; 
+		nrRep = 0;
+		seenRep = 0;
 		tooBigReps=NO;
 		if (xmloutput==YES) fprintf(output_file,"<repetitions>\n");
 		workchar=ProcessSeqFromFile(input_file);
@@ -784,13 +793,17 @@ int main (int argc,char * argv[])
 	  }
       }
     else
-      workchar=ProcessSeqFromFile(input_file);	
-
+      workchar=ProcessSeqFromFile(input_file);
+      
+    
 #ifdef SHOWJUNK
   if (showjunk)
      fclose(junkfile);
 #endif
   TERMINATE_XML_OUTPUT(output_file,output_file_name,0);
+  
+  free(seqName);
+  
   return 0;
 }
 
