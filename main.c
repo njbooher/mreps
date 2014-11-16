@@ -98,7 +98,7 @@ void logo()
     printf("\trepetition_or_sequence");
   }
   
-  printf("\n")
+  printf("\n");
 }
 
 void help()     
