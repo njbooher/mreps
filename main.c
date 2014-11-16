@@ -79,7 +79,7 @@ void init_limits ()
 {
   lim. err_number = 0 ;
   lim. min_period = lim. min_exponent = lim. min_size = 1 ;
-  lim. max_period = lim. max_exponent = lim. max_size = -1 ;
+  lim. max_period = lim. div_period = lim. max_exponent = lim. max_size = -1 ;
 }
     
 void logo()
@@ -111,6 +111,7 @@ void help()
   printf( " -maxsize n   : repeats whose size is at most n\n");
   printf( " -minperiod n : repeats whose period is at least n\n");
   printf( " -maxperiod n : repeats whose period is at most n\n");
+  printf( " -divperiod n : repeats whose period are divisible by n\n");
   printf( " -exp x       : repeats whose exponent is at least x\n");
 /*   printf( " -nacgt       : allow the occurrence of non-acgt \n"); */
 /*   printf( "                characters in a DNA sequence.\n"); */
@@ -532,6 +533,8 @@ int main (int argc,char * argv[])
       ARG_INT("-maxp", lim.max_period);
 /*       ARG_INT("-maxPeriod", lim.max_period ); */
       ARG_INT("-maxperiod", lim.max_period );
+      
+      ARG_INT("-divperiod",   lim.div_period );
 
       ARG_INT("-minsize",   lim.min_size );
 /*       ARG_INT("-minSize",   lim.min_size ); */

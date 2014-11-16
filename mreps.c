@@ -368,8 +368,9 @@ void print_mrepeat(int rinitpos, int rendpos, int rperiod)
 
   rexp = (float)rlength/rperiod;          // the exp of the repeat     
     if ( (rlength >= lim.min_size) && (rlength <= lim.max_size)    // LIMIT for size
-         && (rexp >= lim.min_exponent) )                           // LIMIT for exponent
-
+         && (rexp >= lim.min_exponent)                          // LIMIT for exponent
+         && (lim.div_period == -1 || rperiod % lim.div_period == 0)) // LIMIT for period divisibility
+    
   //This part is for the exe version of the program. Comment it out for web version.
 
 /*        print_rep(rinitpos+1, rendpos, rlength,  rperiod, 0); */

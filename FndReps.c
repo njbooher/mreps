@@ -407,7 +407,8 @@ void showByInit(void)
 	      repLength=endPstn-initPos;
 	      repPeriod=current->rep.period;
 	      if ( (repLength>=lim.min_size) && (repLength<=lim.max_size) && 
-		   ((float)repLength/repPeriod>=lim.min_exponent) )
+		   ((float)repLength/repPeriod>=lim.min_exponent) &&
+		   (lim.div_period == -1 || repPeriod % lim.div_period == 0) )
 		{ 	     
 #ifdef SHOWSCORE
 		  repScore=FindScore();

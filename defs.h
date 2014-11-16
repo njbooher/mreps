@@ -52,7 +52,8 @@ struct s_limits
 {
   int err_number ;
   int min_period ;
-  int max_period ;        
+  int max_period ;
+  int div_period ; 
   float min_exponent ;
   int max_exponent ;       /* Not implemented */
   int min_size ;
