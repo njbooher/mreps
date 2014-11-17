@@ -25,7 +25,7 @@ void print_rep(int rinitpos, int rendpos, int rlength, int rperiod, int rnumerr)
 	     "\t<repeat>\n\t\t<start>%d</start>\n\t\t<end>%d</end>\n\t\t<length>%d</length>\n\t\t<period>%d</period>\n\t\t<exponent>%.2f</exponent>\n\t\t<errors>%d</errors>\n",
 	     start_pstn+rinitpos, start_pstn+rendpos, rlength, rperiod,((float) rlength) / rperiod, rnumerr) ; 
   else
-    printf("%s\t%8d\t%8d\t%d\t%d\t%.2f\t%d",
+    printf("%s\t%d\t%d\t%d\t%d\t%.2f\t%d",
 	   seqName+strspn(seqName," "), start_pstn+rinitpos, start_pstn+rendpos, rlength, rperiod, ((float) rlength) / rperiod, rnumerr
 	   ) ;
 
@@ -92,7 +92,7 @@ void print_score(int rinitpos, int rendpos, int rlength, int rperiod, float rsco
 	     "\t<repeat>\n\t\t<start>%d</start>\n\t\t<end>%d</end>\n\t\t<length>%d</length>\n\t\t<period>%d</period>\n\t\t<exponent>%.2f</exponent>\n\t\t<score>%.3f</score>\n",
 	     start_pstn+rinitpos, start_pstn+rendpos, rlength, rperiod,((float) rlength) / rperiod, rscore) ; 
   else
-    printf("%s\t%8d\t%8d\t%d\t%d\t%.2f\t%.3f",
+    printf("%s\t%d\t%d\t%d\t%d\t%.2f\t%.3f",
 	   seqName+strspn(seqName," "), start_pstn+rinitpos, start_pstn+rendpos, rlength, rperiod, ((float) rlength) / rperiod, rscore
 	   ) ;
 
